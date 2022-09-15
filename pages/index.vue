@@ -9,10 +9,8 @@
         <div class="relative">
           <div @click="selectNetwork = true" hover="bg-primary-400" active="bg-primary-600"
             class="bg-primary-500 flex items-center space-x-1 text-white px-2 h-10 leading-10  rounded-full cursor-pointer text-white">
-            <img v-if="!walletStore.netId || walletStore.netId === 1" class="w-6 rounded-full" src="/ETH.png" alt="" />
-            <span v-if="!walletStore.netId || walletStore.netId === 1" class="sm:block hidden">Ethereum</span>
-            <!-- <img v-if="walletStore.netId === 10001" class="w-6 rounded-full" src="/ETH.png" alt="" />
-            <span v-if="walletStore.netId === 10001" class="sm:block hidden">Ethereum</span> -->
+            <img v-if="walletStore.netId === 10001" class="w-6 rounded-full" src="/ETH.png" alt="" />
+            <span v-if="walletStore.netId === 10001" class="sm:block hidden">Ethereum</span>
             <i i-carbon-chevron-down class="inline-block text-fs24 sm:block hidden"></i>
           </div>
           <Transition enter-from-class="opacity-0 scale-95 duration-150 ease-out"
@@ -24,24 +22,7 @@
               <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="relative grid gap-6 bg-white p-4">
                   <div class="text-black">{{ $t('home.选择网络') }}</div>
-                  <div :class="walletStore.netId === 1 ? 'bg-primary-400' : ''"
-                    @click="walletStore.changeNetwork(1), selectNetwork = false"
-                    class="-m-3 rounded-lg p-3 cursor-pointer">
-                    <div class="flex items-start">
-                      <img class="w-6 rounded-full" src="/ETH.png" alt="" />
-                      <div class="ml-4">
-                        <p class="text-base font-medium text-gray-900">Ethereum</p>
-                      </div>
-                    </div>
-                    <a href="https://etherscan.io/" target="_blank" rel="noopener noreferrer">
-                      <div class="text-sm text-gray-500 mt-2 flex items-center justify-between">
-                        <span>Etherscan</span>
-                        <i i-carbon-link class="inline-block"></i>
-                      </div>
-                    </a>
-                  </div>
-
-                  <div :class="walletStore.netId === 10001 ? 'bg-primary-400' : ''" @click="selectNetwork = false"
+                  <div :class="walletStore.netId === 10001 ? 'bg-primary-400' : ''" @click="walletStore.changeNetwork(10001), selectNetwork = false"
                     class="-m-3 rounded-lg p-3 cursor-pointer">
                     <div class="flex items-start">
                       <img class="w-6 rounded-full" src="/ETH.png" alt="" />
@@ -97,7 +78,6 @@
           </div>
           <div class="flex items-center justify-between pb-2">
             <div class="text-fs22 text-white">{{ $t('home.设置') }}</div>
-            <!-- <span>{{walletStore.currentBlockNumber}}</span> -->
             <div class="relative">
               <i @click="showSettings = true" i-carbon-settings hover="text-primary-500"
                 class="text-white inline-block cursor-pointer"></i>
@@ -349,8 +329,6 @@ const toValue = ref('')
 const isReverse = ref(false)
 const gasPrice = ref('')
 const getGasLimit = ref('')
-let blockNumberTimer = 0
-
 
 const data = reactive({
   tokenList: [
@@ -389,25 +367,15 @@ onMounted(async () => {
 
   FAQModal.value = walletStore.isShowFAQModal
 
-  await walletStore.initWeb3()
-  await walletStore.getBlockNumber()
-  blockNumberTimer = window.setInterval(async () => {
-    await walletStore.getBlockNumber()
-  }, 5000);
-
   await walletStore.getGasPrice()
   gasPrice.value = walletStore.$state.gasPrice
   getGasLimit.value = walletStore.$state.getGasLimit
 
-  if (walletStore.netId !== 1 && walletStore.netId !== 10001) {
-    walletStore.changeNetwork(1)
+  if (walletStore.netId !== 10001) {
+    walletStore.changeNetwork(10001)
   }
 
   onChangeAccounts()
-})
-
-onUnmounted(() => {
-  window.clearInterval(blockNumberTimer)
 })
 
 const onChangeAccounts = async () => {
